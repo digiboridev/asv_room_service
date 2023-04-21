@@ -1,0 +1,19 @@
+{
+  "name": "asv_socket",
+  "scripts": {
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "lib/index.js"
+  },
+  "engines": {
+    "node": "16"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  },
+  "private": true
+}
