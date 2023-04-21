@@ -36,14 +36,24 @@ io.on("connection", async (socket) => {
     const clientId = socket.data.clientId;
 
     socket.join([roomId, clientId]);
-    socket.to(roomId).emit("join", { clientId: clientId, time: Date.now() });
+
+    // Presence events
+    socket.to(roomId).emit("presence_join", { clientId: clientId, time: Date.now() });
     console.log(`User ${clientId} connected to room ${roomId}`);
 
     socket.on("disconnect", async () => {
         console.log(`User ${clientId} disconnected from room ${roomId}`);
-        socket.to(roomId).emit("leave", { clientId: clientId, time: Date.now() });
+        socket.to(roomId).emit("presence_leave", { clientId: clientId, time: Date.now() });
     });
 
+    socket.on("presence_signal", async () => {
+        console.log(`User ${clientId} signals from room ${roomId}`);
+        socket.to(roomId).emit("presence_signal", { clientId: clientId, time: Date.now() });
+    });
+    // End presence events
+
+
+    // Chat events
     socket.on("msg", async (msg: Message) => {
         console.log(`User ${clientId} sent message to room ${roomId}:`);
         console.log(msg.text);
@@ -59,7 +69,9 @@ io.on("connection", async (socket) => {
         console.log(`User ${clientId} stopped typing in room ${roomId}`);
         socket.to(roomId).emit("typing_cancel", { clientId: clientId });
     });
+    // End chat events
 
+    // RTC events
     socket.on("rtc_offer", async (data) => {
         console.log("rtc_offer", data);
         io.to(data.to).emit("rtc_offer", data);
@@ -74,6 +86,7 @@ io.on("connection", async (socket) => {
         console.log("rtc_candidate", data);
         io.to(data.to).emit("rtc_candidate", data);
     });
+    // End RTC events
 });
 
 io.listen(3000);
