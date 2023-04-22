@@ -1,7 +1,7 @@
 {
   "name": "asv_socket",
   "scripts": {
-    "build": "tsc",
+    "build": "npm i && tsc",
     "build:watch": "tsc --watch",
     "start": "lib/index.js"
   },
