@@ -3,7 +3,7 @@
   "scripts": {
     "build": "npm i && tsc",
     "build:watch": "tsc --watch",
-    "start": "lib/index.js"
+    "start": "node lib/index.js"
   },
   "engines": {
     "node": "16"
