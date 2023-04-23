@@ -72,6 +72,16 @@ io.on("connection", async (socket) => {
     // End chat events
 
     // RTC events
+    socket.on("rtc_warmup", async (data) => {
+        console.log("rtc_warmup", data);
+        io.to(data.to).emit("rtc_warmup", data);
+    });
+
+    socket.on("rtc_ready", async (data) => {
+        console.log("rtc_ready", data);
+        io.to(data.to).emit("rtc_ready", data);
+    });
+
     socket.on("rtc_offer", async (data) => {
         console.log("rtc_offer", data);
         io.to(data.to).emit("rtc_offer", data);
