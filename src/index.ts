@@ -52,7 +52,6 @@ io.on("connection", async (socket) => {
     });
     // End presence events
 
-
     // Chat events
     socket.on("msg", async (msg: Message) => {
         console.log(`User ${clientId} sent message to room ${roomId}:`);
@@ -72,9 +71,24 @@ io.on("connection", async (socket) => {
     // End chat events
 
     // RTC events
-    socket.on("rtc_warmup", async (data) => {
-        console.log("rtc_warmup", data);
-        io.to(data.to).emit("rtc_warmup", data);
+    // socket.on("rtc_warmup", async (data) => {
+    //     console.log("rtc_warmup", data);
+    //     io.to(data.to).emit("rtc_warmup", data);
+    // });
+
+    socket.on("rtc_warmup_ack", async (data, ack) => {
+        console.log("rtc_warmup_ack", data);
+
+        try {
+            var response = await io.timeout(1000).to(data.to).emitWithAck("rtc_warmup_ack", data);
+            console.log(response);
+
+            ack(response[0]);
+        } catch (error) {
+            console.log("timeout");
+
+            ack("timeout");
+        }
     });
 
     socket.on("rtc_ready", async (data) => {
