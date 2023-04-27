@@ -3,6 +3,7 @@ import { Message } from "./models/message";
 
 const io = new Server();
 
+
 io.use(async (socket, next) => {
     const token = socket.handshake.auth.token;
     const roomId = socket.handshake.auth.roomId;
@@ -34,6 +35,7 @@ io.use(async (socket, next) => {
 io.on("connection", async (socket) => {
     const roomId = socket.data.roomId;
     const clientId = socket.data.clientId;
+    
 
     socket.join([roomId, clientId]);
 
@@ -71,11 +73,6 @@ io.on("connection", async (socket) => {
     // End chat events
 
     // RTC events
-    // socket.on("rtc_warmup", async (data) => {
-    //     console.log("rtc_warmup", data);
-    //     io.to(data.to).emit("rtc_warmup", data);
-    // });
-
     socket.on("rtc_warmup_ack", async (data, ack) => {
         console.log("rtc_warmup_ack", data);
 
@@ -89,11 +86,6 @@ io.on("connection", async (socket) => {
 
             ack("timeout");
         }
-    });
-
-    socket.on("rtc_ready", async (data) => {
-        console.log("rtc_ready", data);
-        io.to(data.to).emit("rtc_ready", data);
     });
 
     socket.on("rtc_offer", async (data) => {
@@ -114,4 +106,6 @@ io.on("connection", async (socket) => {
 });
 
 io.listen(3000);
+
+
 console.log("listening on port 3000");
