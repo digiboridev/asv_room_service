@@ -49,7 +49,7 @@ io.on("connection", async (socket) => {
     });
 
     socket.on("presence_signal", async () => {
-        console.log(`User ${clientId} signals from room ${roomId}`);
+        // console.log(`User ${clientId} signals from room ${roomId}`);
         socket.to(roomId).emit("presence_signal", { clientId: clientId, time: Date.now() });
     });
     // End presence events
@@ -74,7 +74,7 @@ io.on("connection", async (socket) => {
 
     // RTC events
     socket.on("rtc_warmup_ack", async (data, ack) => {
-        console.log("rtc_warmup_ack", data);
+        // console.log("rtc_warmup_ack", data);
 
         try {
             var response = await io.timeout(1000).to(data.to).emitWithAck("rtc_warmup_ack", data);
@@ -89,17 +89,17 @@ io.on("connection", async (socket) => {
     });
 
     socket.on("rtc_offer", async (data) => {
-        console.log("rtc_offer", data);
+        // console.log("rtc_offer", data);
         io.to(data.to).emit("rtc_offer", data);
     });
 
     socket.on("rtc_answer", async (data) => {
-        console.log("rtc_answer", data);
+        // console.log("rtc_answer", data);
         io.to(data.to).emit("rtc_answer", data);
     });
 
     socket.on("rtc_candidate", async (data) => {
-        console.log("rtc_candidate", data);
+        // console.log("rtc_candidate", data);
         io.to(data.to).emit("rtc_candidate", data);
     });
     // End RTC events
