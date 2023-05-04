@@ -1,15 +1,18 @@
 import { Server } from "socket.io";
 import { Message } from "./models/message";
+import * as dotenv from 'dotenv';
+
+dotenv.config()
 
 const io = new Server();
 
 
 io.use(async (socket, next) => {
-    const token = socket.handshake.auth.token;
+    const apiKey = socket.handshake.auth.apiKey;
     const roomId = socket.handshake.auth.roomId;
     const clientId = socket.handshake.auth.clientId;
-
-    if (token != "123123") {
+    
+    if (apiKey != process.env.APIKEY) {
         console.log("not authenticated");
         next(new Error("authentication error"));
         return;
