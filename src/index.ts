@@ -9,6 +9,7 @@ const io = new Server();
 io.use(async (socket, next) => {
     const apiKey = socket.handshake.auth.apiKey;
     const roomId = socket.handshake.auth.roomId;
+    const client = socket.handshake.auth.client;
 
     if (apiKey != process.env.APIKEY) {
         console.log("not authenticated");
@@ -22,44 +23,63 @@ io.use(async (socket, next) => {
         return;
     }
 
+    if (!client) {
+        console.log("no client");
+        next(new Error("no client"));
+        return;
+    }
+
     socket.data.roomId = roomId;
+    socket.data.client = client;
     next();
 });
 
 io.on("connection", async (socket) => {
     const roomId = socket.data.roomId;
+    const client = socket.data.client;
 
     socket.join([roomId]);
 
     // Presence events
-    socket.to(roomId).emit("presence_join", { memberId: socket.id, time: Date.now() });
+    socket.to(roomId).emit("presence_join", { client: client, memberId: socket.id, time: Date.now() });
     console.log(`User ${socket.id} connected to room ${roomId}`);
 
     socket.on("disconnect", async () => {
         console.log(`User ${socket.id} disconnected from room ${roomId}`);
-        socket.to(roomId).emit("presence_leave", { memberId: socket.id, time: Date.now() });
+        socket.to(roomId).emit("presence_leave", { client: client, memberId: socket.id, time: Date.now() });
     });
 
     socket.on("presence_signal", async () => {
-        socket.to(roomId).emit("presence_signal", { memberId: socket.id, time: Date.now() });
+        console.log(`User ${socket.id} signaled presence in room ${roomId}`);
+        socket.to(roomId).emit("presence_signal", { client: client, memberId: socket.id, time: Date.now() });
     });
     // End presence events
 
     // Chat events
-    socket.on("msg", async (msg: Message) => {
+    socket.on("msg", async (message: string) => {
         console.log(`User ${socket.id} sent message to room ${roomId}:`);
-        console.log(msg.text);
-        io.to(roomId).emit("msg", msg);
+        io.to(roomId).emit("msg", {
+            client: client,
+            message: message,
+            // memberId: socket.id,
+            time: Date.now(),
+        });
     });
 
     socket.on("typing", async () => {
         console.log(`User ${socket.id} is typing in room ${roomId}`);
-        socket.to(roomId).emit("typing", { memberId: socket.id });
+        socket.to(roomId).emit("typing", { 
+            client: client,
+            // memberId: socket.id,
+        });
     });
 
     socket.on("typing_cancel", async () => {
         console.log(`User ${socket.id} stopped typing in room ${roomId}`);
-        socket.to(roomId).emit("typing_cancel", { memberId: socket.id });
+        socket.to(roomId).emit("typing_cancel", { 
+            client: client,
+            // memberId: socket.id,
+         });
     });
     // End chat events
 
