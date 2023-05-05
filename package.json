@@ -1,5 +1,5 @@
 {
-  "name": "asv_socket",
+  "name": "asv_room_service",
   "scripts": {
     "build": "npm i && tsc",
     "build:watch": "tsc --watch",
