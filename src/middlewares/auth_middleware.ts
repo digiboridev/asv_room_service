@@ -1,31 +1,32 @@
-import { Server, Socket } from "socket.io";
+import { Socket } from "socket.io";
 import { ExtendedError } from "socket.io/dist/namespace";
-
+import { Client } from "../models/client";
 
 /// Auth middleware
 export function authMiddleware(socket: Socket, next: (err?: ExtendedError | undefined) => void) {
     // Extract auth data from connection request
-    const apiKey = socket.handshake.auth.apiKey;
-    const roomId = socket.handshake.auth.roomId;
-    const client = socket.handshake.auth.client;
+    const apiKey: string = socket.handshake.auth.apiKey;
+    const roomId: string = socket.handshake.auth.roomId;
+    const client: Client = socket.handshake.auth.client;
 
-    // Validate auth data
+    // Validate auth request
+
     if (apiKey != process.env.APIKEY) {
-        console.log("not authenticated");
-        next(new Error("authentication error"));
-        return;
+        const error = new Error("Authentication error, key mismatch");
+        console.log(error.message);
+        return next(error);
     }
 
     if (!roomId) {
-        console.log("no room id");
-        next(new Error("no room id"));
-        return;
+        const error = new Error("Authentication error, no room id");
+        console.log(error.message);
+        return next(error);
     }
 
     if (!client) {
-        console.log("no client");
-        next(new Error("no client"));
-        return;
+        const error = new Error("Authentication error, no client");
+        console.log(error.message);
+        return next(error);
     }
 
     // Save auth data to socket
