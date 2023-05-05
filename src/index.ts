@@ -7,5 +7,6 @@ dotenv.config();
 const io:Server = createRoomServer();
 const port = process.env.PORT || 3000;
 io.listen(port as number);
-console.log("listening on port $port");
+console.log( process.env.PORT);
+console.log(`listening on port ${port}`);
 
